@@ -1,7 +1,20 @@
 challenge:
   - parse:
-  - geoip
-  - rdap
-  - search
-  - export:
-      exports data from
+      - inputFile:
+      - outputFile
+  - locate:
+      - inputFile
+      - outputFile
+      - database:
+          - use the geoIP2Lite postgres database instead of the web api
+      - useCache:
+          - check with the local redis database first before making a request
+      - apiKey:
+          - only needed if database == false
+  - whos:
+      - inputFile
+      - outputFile
+      - useCache:
+          - check with the local redis database first before making an api request
+  - search:
+      - ip

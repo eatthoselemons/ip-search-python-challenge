@@ -1,7 +1,7 @@
 # overview
 
 ## Packages
- - use [geoiplookup](http://geoiplookup.net/xml-api/) for geoip, no ratelimit mentioned
+ - use [geoIP2lite](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en) for geoip, 1000 requests a day limit
  - use [rdap.org](https://about.rdap.org/) for rdap lookups, ratelimit: 10 per second, also need to follow redirects
 
 
@@ -15,7 +15,7 @@
  - use [python unittest](https://docs.python.org/3/library/unittest.html) to do unit tests as it is based on JUnit and is in the python standard lib
  - use [python typing](https://docs.python.org/3/library/typing.html) to do type hinting, in python >3.5
  - use [python requests](https://pypi.org/project/requests/) to do http requests
-
+ - use [python typer](https://typer.tiangolo.com/) typed cli builder
 ## Structure
 
 Each section will be split into a separate module, (parse, geoip, RDAP, cache)
