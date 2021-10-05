@@ -42,7 +42,7 @@ def locate(input_file: str,
             data[ip] = my_caching.put_in_cache(f'geoip-{ip}', location_service.find_data(ip, use_cache))
         except requests.HTTPError:
             print("ran out of api requests saving work to file and exiting, try using the database option")
-            my_writer.write_locate_list(data, output_file)
+            my_writer.write_data_list(data, output_file, 'locate')
 
     my_writer.write_locate_list(data, output_file)
 
@@ -59,7 +59,7 @@ def whos(input_file: str,
 
     for ip in ip_list:
         data[ip] = my_caching.put_in_cache(f'rdap-{ip}', rdap_service.find_data(ip, use_cache))
-    my_writer.write_whos_list(data, output_file)
+    my_writer.write_data_list(data, output_file, 'whos')
 
     # TODO
 
