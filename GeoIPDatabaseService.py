@@ -5,9 +5,9 @@ import json
 
 
 class GeoIPDatabaseService:
-    def __init__(self, **Kwargs):
+    def __init__(self, **kwargs):
         self.r = redis.Redis(host='localhost', port=6379, db=0)
-        self.postgres_password = Kwargs['postgres_password']
+        self.postgres_password = kwargs['localDatabasePassword']
 
     def find_data(self, ip: str, use_cache: bool) -> json:
         if use_cache:

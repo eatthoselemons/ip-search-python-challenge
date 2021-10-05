@@ -10,7 +10,7 @@ You will need these installed:
 
 ```
 geoIPUsername=<your username here>
-geoIPLicenseKey=<your api key here>
+geoIPApiKey=<your api key here>
 localDatabasePassword=<random password here>
 ```
 

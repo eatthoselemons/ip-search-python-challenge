@@ -1,12 +1,12 @@
 import redis
 import requests
 import typer
-import MyCaching
-import MyParser
-import MyWriter
-import RDAPService
-import GeoIPApiService
-import GeoIPDatabaseService
+from MyParser import MyParser
+from MyWriter import MyWriter
+from MyCaching import MyCaching
+from RDAPService import RDAPService
+from GeoIPDatabaseService import GeoIPDatabaseService
+from GeoIPApiService import GeoIPApiService
 
 app = typer.Typer()
 
@@ -17,6 +17,7 @@ def parse(input_file: str,
     my_parser: MyParser = MyParser()
     my_writer: MyWriter = MyWriter()
     my_writer.write_ip_list(my_parser.parse_input_file(input_file), output_file)
+
 
 @app.command()
 def locate(input_file: str,
@@ -33,9 +34,9 @@ def locate(input_file: str,
     # both GeoIPDatabaseService and GeoIPApiService implement the
     # interface for GeoIPService however I don't know how to add interfaces
     if local_database:
-        location_service= GeoIPDatabaseService(config)
+        location_service = GeoIPDatabaseService(**config)
     else:
-        location_service= GeoIPApiService(config)
+        location_service = GeoIPApiService(**config)
 
     for ip in ip_list:
         try:
@@ -43,8 +44,8 @@ def locate(input_file: str,
         except requests.HTTPError:
             print("ran out of api requests saving work to file and exiting, try using the database option")
             my_writer.write_data_list(data, output_file, 'locate')
+    my_writer.write_data_list(data, output_file, 'locate')
 
-    my_writer.write_locate_list(data, output_file)
 
 @app.command()
 def whos(input_file: str,
@@ -61,7 +62,6 @@ def whos(input_file: str,
         data[ip] = my_caching.put_in_cache(f'rdap-{ip}', rdap_service.find_data(ip, use_cache))
     my_writer.write_data_list(data, output_file, 'whos')
 
-    # TODO
 
 @app.command()
 def search(ip: str):
