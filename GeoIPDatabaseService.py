@@ -10,8 +10,9 @@ class GeoIPDatabaseService:
         self.postgres_password = kwargs['localDatabasePassword']
 
     def find_data(self, ip: str, use_cache: bool) -> json:
+        """Finds the data if use_cache is true then checks the redis database before the geoip postgres database"""
         if use_cache:
-            return self.r.get(ip) or self.jsonify_database(ip)
+            return self.r.get(ip).decode('utf-8') or self.jsonify_database(ip)
         else:
             return self.jsonify_database(ip)
 

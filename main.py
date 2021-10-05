@@ -14,16 +14,19 @@ app = typer.Typer()
 @app.command()
 def parse(input_file: str,
           output_file: str = "ipList.txt"):
+    """Extracts ip's from a text file and then puts those ip's in their own file"""
     my_parser: MyParser = MyParser()
     my_writer: MyWriter = MyWriter()
     my_writer.write_ip_list(my_parser.parse_input_file(input_file), output_file)
 
 
 @app.command()
-def locate(input_file: str,
+def locate(input_file: str = "ipList.txt",
            output_file: str = "geoIPs.txt",
            use_cache: bool = True,
            local_database: bool = True):
+    """Searches geoip based on a list of ip's in the input file.
+    Depending on options will use the geoip database or the geoip api"""
     my_parser: MyParser = MyParser()
     my_caching: MyCaching = MyCaching()
     my_writer: MyWriter = MyWriter()
@@ -48,9 +51,10 @@ def locate(input_file: str,
 
 
 @app.command()
-def whos(input_file: str,
+def whos(input_file: str = "ipList.txt",
          output_file: str = "rdapIPs.txt",
          use_cache: bool = True):
+    """Checks RDAP data based on an input file with a list of ip's"""
     my_parser: MyParser = MyParser()
     my_caching: MyCaching = MyCaching()
     my_writer: MyWriter = MyWriter()
@@ -65,9 +69,10 @@ def whos(input_file: str,
 
 @app.command()
 def search(ip: str):
+    """Search the local redis database for an ip and print the data"""
     r = redis.Redis(host='localhost', port=6379, db=0)
-    print(f"geoip data: {r.get(f'geoip-{ip}')}")
-    print(f"RDAP data: {r.get(f'rdap-{ip}')}")
+    print(f"geoip data: {r.get(f'geoip-{ip}').decode('utf-8')}")
+    print(f"RDAP data: {r.get(f'rdap-{ip}').decode('utf-8')}")
 
 
 if __name__ == "__main__":
