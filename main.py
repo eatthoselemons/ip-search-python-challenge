@@ -1,8 +1,10 @@
 import redis
+import requests
 import typer
 import MyCaching
 import MyParser
 import MyWriter
+import RDAPService
 import GeoIPApiService
 import GeoIPDatabaseService
 
@@ -37,8 +39,8 @@ def locate(input_file: str,
 
     for ip in ip_list:
         try:
-            data[ip] = my_caching.put_in_cache(ip, location_service.find_data(ip, use_cache))
-        except HTTPError:
+            data[ip] = my_caching.put_in_cache(f'geoip-{ip}', location_service.find_data(ip, use_cache))
+        except requests.HTTPError:
             print("ran out of api requests saving work to file and exiting, try using the database option")
             my_writer.write_locate_list(data, output_file)
 
@@ -48,12 +50,24 @@ def locate(input_file: str,
 def whos(input_file: str,
          output_file: str = "rdapIPs.txt",
          use_cache: bool = True):
+    my_parser: MyParser = MyParser()
+    my_caching: MyCaching = MyCaching()
+    my_writer: MyWriter = MyWriter()
+    rdap_service: RDAPService = RDAPService()
+    ip_list = my_parser.parse_ip_file(input_file)
+    data = {}
+
+    for ip in ip_list:
+        data[ip] = my_caching.put_in_cache(f'rdap-{ip}', rdap_service.find_data(ip, use_cache))
+    my_writer.write_whos_list(data, output_file)
+
     # TODO
 
 @app.command()
 def search(ip: str):
     r = redis.Redis(host='localhost', port=6379, db=0)
-    print(r.get(ip))
+    print(f"geoip data: {r.get(f'geoip-{ip}')}")
+    print(f"RDAP data: {r.get(f'rdap-{ip}')}")
 
 
 if __name__ == "__main__":

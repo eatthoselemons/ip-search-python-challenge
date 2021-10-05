@@ -19,3 +19,6 @@ run `bash install-geoip2lite-database.sh`
 
 # Things to Improve
  - Make `GeoIPDatabaseService` and `GeoIPApiService` to implement the `GeoIPService` interface
+ - Do better validation of the data and http response codes
+ - Reduce repeated code in `find_data()`
+

@@ -1,13 +1,11 @@
 import redis
-import requests
 import json
+import requests
 
 
-class GeoIPApiService:
+class RDAPService:
     def __init__(self, **kwargs):
         self.r = redis.Redis(host='localhost', port=6379, db=0)
-        self.geoip_api_username = kwargs['geoipUsername']
-        self.geoip_api_key = kwargs['geoipApiKey']
 
     def find_data(self, ip: str, use_cache: bool) -> json:
         if use_cache:
@@ -17,8 +15,6 @@ class GeoIPApiService:
 
     # remember to check if the http header is correct if not throw
     def jsonify_api(self, ip: str) -> json:
-        request = requests.get(f"https://geolite.info/geoip/v2.1/city/{ip}", auth=(self.geoip_api_username, self.geoip_api_key))
-        if not request.status_code == requests.codes.ok:
-            return request.text
-        else:
-            request.raise_for_status()
+        r = requests.get(f'https://rdap.org/ip/{ip}')
+
+        return json.dumps(r.text)
