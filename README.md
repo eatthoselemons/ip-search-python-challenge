@@ -15,3 +15,7 @@ localDatabasePassword=<random password here>
 ```
 
 run `bash install-geoip2lite-database.sh` 
+
+
+# Things to Improve
+ - Make `GeoIPDatabaseService` and `GeoIPApiService` to implement the `GeoIPService` interface

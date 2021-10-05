@@ -1,40 +1,60 @@
+import redis
 import typer
+import MyCaching
+import MyParser
+import MyWriter
+import GeoIPApiService
+import GeoIPDatabaseService
 
 app = typer.Typer()
 
 
 @app.command()
-def parse(inputFile: str,
-          outputFile: str = "ipList.txt"):
-    writeIPList(parseInputFile(inputFile), outputFile)
+def parse(input_file: str,
+          output_file: str = "ipList.txt"):
+    my_parser: MyParser = MyParser()
+    my_writer: MyWriter = MyWriter()
+    my_writer.write_ip_list(my_parser.parse_input_file(input_file), output_file)
 
 @app.command()
-def locate(inputFile: str,
-           outputFile: str = "geoIPs.txt",
-           useCache: bool = True,
-           localDatabase: bool = True):
+def locate(input_file: str,
+           output_file: str = "geoIPs.txt",
+           use_cache: bool = True,
+           local_database: bool = True):
+    my_parser: MyParser = MyParser()
+    my_caching: MyCaching = MyCaching()
+    my_writer: MyWriter = MyWriter()
+    config = my_parser.parse_config()
+    ip_list = my_parser.parse_ip_file(input_file)
+    data = {}
 
-    ipList = parseIPFile(inputFile)
-
-    if localDatabase:
-        locationService: GeoIP2DatabaseService = new GeoIPDatabaseService()
+    # both GeoIPDatabaseService and GeoIPApiService implement the
+    # interface for GeoIPService however I don't know how to add interfaces
+    if local_database:
+        location_service= GeoIPDatabaseService(config)
     else:
-        locationService: GeoIP2DatabaseService = new GeoIPApiService
+        location_service= GeoIPApiService(config)
 
-    if useCache:
-        for ip in ipList:
+    for ip in ip_list:
+        try:
+            data[ip] = my_caching.put_in_cache(ip, location_service.find_data(ip, use_cache))
+        except HTTPError:
+            print("ran out of api requests saving work to file and exiting, try using the database option")
+            my_writer.write_locate_list(data, output_file)
 
-
-    if useCache:
-        if localDatabase:
-            grabGeoIpData(getListOfIPs(inputFile))
-    # TODO locate
+    my_writer.write_locate_list(data, output_file)
 
 @app.command()
-def whos(inputFile: str,
-         outputFile: str = "rdapIPs.txt",
-         useCache: bool = True):
+def whos(input_file: str,
+         output_file: str = "rdapIPs.txt",
+         use_cache: bool = True):
     # TODO
 
+@app.command()
 def search(ip: str):
-    # TODO
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    print(r.get(ip))
+
+
+if __name__ == "__main__":
+    app()
