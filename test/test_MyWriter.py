@@ -5,7 +5,6 @@ import os
 
 class TestMyWriter(TestCase):
     def setUp(self) -> None:
-        print(os.getcwd())
         os.makedirs("./test_MyWriter/", exist_ok=True)
 
     def test_write_ip_list(self):

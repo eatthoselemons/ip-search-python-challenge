@@ -29,14 +29,14 @@ class MyParser:
                     ips.append(item[0])
         return ips
 
-    def parse_config(self) -> dict[str, str]:
+    def parse_config(self, input_file: str = './setup/config.cfg') -> dict[str, str]:
         """Parses the project config so those can be used by other functions"""
         config_items: dict[str, str] = {}
         variable_search = re.compile(r"^(\w*)=([0-9a-zA-Z]*)$")
-        with open('./setup/config.cfg') as file:
+        with open(input_file) as file:
             for line in file:
                 results = re.findall(variable_search, line)
-                config_items[results[0]] = results[1]
+                config_items[results[0][0]] = results[0][1]
         return config_items
 
     def parse_ip_file(self, input_file: str) -> list[str]:
@@ -44,5 +44,5 @@ class MyParser:
         ips: list[str] = []
         with open(input_file) as file:
             for line in file:
-                ips.append(line)
+                ips.append(line.rstrip('\n'))
         return ips

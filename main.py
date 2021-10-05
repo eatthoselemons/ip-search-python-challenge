@@ -18,6 +18,7 @@ def parse(input_file: str,
     my_parser: MyParser = MyParser()
     my_writer: MyWriter = MyWriter()
     my_writer.write_ip_list(my_parser.parse_input_file(input_file), output_file)
+    print(f'Check {output_file} for your data')
 
 
 @app.command()
@@ -30,7 +31,7 @@ def locate(input_file: str = "ipList.txt",
     my_parser: MyParser = MyParser()
     my_caching: MyCaching = MyCaching()
     my_writer: MyWriter = MyWriter()
-    config = my_parser.parse_config()
+    config = my_parser.parse_config('./setup/config.cfg')
     ip_list = my_parser.parse_ip_file(input_file)
     data = {}
 
@@ -48,6 +49,7 @@ def locate(input_file: str = "ipList.txt",
             print("ran out of api requests saving work to file and exiting, try using the database option")
             my_writer.write_data_list(data, output_file, 'locate')
     my_writer.write_data_list(data, output_file, 'locate')
+    print(f'Check {output_file} for your data')
 
 
 @app.command()
@@ -65,6 +67,7 @@ def whos(input_file: str = "ipList.txt",
     for ip in ip_list:
         data[ip] = my_caching.put_in_cache(f'rdap-{ip}', rdap_service.find_data(ip, use_cache))
     my_writer.write_data_list(data, output_file, 'whos')
+    print(f'Check {output_file} for your data')
 
 
 @app.command()

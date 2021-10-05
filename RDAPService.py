@@ -11,7 +11,11 @@ class RDAPService:
     def find_data(self, ip: str, use_cache: bool) -> json:
         """Gets data for an ip. If use_cache is True then checks the redis database for the data first"""
         if use_cache:
-            return self.r.get(ip).decode('utf-8') or self.jsonify_api(ip)
+            redis_return = self.r.get(ip)
+            if redis_return:
+                return redis_return.decode('utf-8')
+            else:
+                return self.jsonify_api(ip)
         else:
             return self.jsonify_api(ip)
 
@@ -20,4 +24,4 @@ class RDAPService:
         r = requests.get(f'https://rdap.org/ip/{ip}')
         time.sleep(0.2)
 
-        return json.dumps(r.text)
+        return r.text
