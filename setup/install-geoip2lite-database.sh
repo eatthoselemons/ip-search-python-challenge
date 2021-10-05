@@ -7,7 +7,7 @@ trap "${trap_msg}" ERR
 source ./config.shlib
 
 # read config file
-licenseKey=$(getConfigVar config.cfg geoIPLicenseKey)
+licenseKey=$(getConfigVar config.cfg geoIPApiKey)
 password=$(getConfigVar config.cfg localDatabasePassword)
 
 export PGPASSWORD=$password
@@ -16,7 +16,7 @@ export PGPASSWORD=$password
 mkdir -p geoIP
 echo "downloading the csv's..."
 if [ ! -f geoIP/geoIP2Lite.zip ]; then
-  curl -vL -o geoIP/geoIP2Lite.zip "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${licenseKey}&suffix=zip"
+  curl -L -o geoIP/geoIP2Lite.zip "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${licenseKey}&suffix=zip"
 fi
 cd geoIP
 unzip -o geoIP2Lite.zip

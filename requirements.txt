@@ -1,0 +1,4 @@
+redis~=3.5.3
+requests~=2.26.0
+typer~=0.4.0
+psycopg~=3.0b1
